@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SOURCE_PATH="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE_PATH" ]; do
+  SOURCE_DIR="$(cd "$(dirname "$SOURCE_PATH")" && pwd)"
+  SOURCE_PATH="$(readlink "$SOURCE_PATH")"
+  [[ "$SOURCE_PATH" != /* ]] && SOURCE_PATH="$SOURCE_DIR/$SOURCE_PATH"
+done
+
+ROOT_DIR="$(cd "$(dirname "$SOURCE_PATH")/.." && pwd)"
+CONFIG_FILE="$ROOT_DIR/.gemma/vertex.env"
+CLI_PATH="$ROOT_DIR/dist/cli.js"
+LAUNCH_CWD="${PWD:-$(pwd)}"
+
+if [ -f "$CONFIG_FILE" ]; then
+  # shellcheck disable=SC1090
+  source "$CONFIG_FILE"
+fi
+
+export CLAUDE_CODE_USE_GEMINI="${CLAUDE_CODE_USE_GEMINI:-1}"
+export CLAUDE_CODE_USE_VERTEX="${CLAUDE_CODE_USE_VERTEX:-1}"
+export ANTHROPIC_VERTEX_PROJECT_ID="${ANTHROPIC_VERTEX_PROJECT_ID:-flux-488702}"
+export CLOUD_ML_REGION="${CLOUD_ML_REGION:-us-central1}"
+export ANTHROPIC_MODEL="${ANTHROPIC_MODEL:-gemini-2.5-pro}"
+export GEMMA_LAUNCH_CWD="${GEMMA_LAUNCH_CWD:-$LAUNCH_CWD}"
+
+if [ ! -f "$CLI_PATH" ]; then
+  echo "dist/cli.js not found. Build first with: node scripts/build-cli.mjs --no-minify" >&2
+  exit 1
+fi
+
+exec node "$CLI_PATH" "$@"

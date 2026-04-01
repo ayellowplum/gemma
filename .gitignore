@@ -1,0 +1,6 @@
+.cache/
+dist/
+.DS_Store
+.gemma/vertex.env
+.claude/settings.local.json
+.claude/agent-memory-local/

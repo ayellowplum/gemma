@@ -1,0 +1,16 @@
+{
+  "name": "gemma-source-build",
+  "version": "2.1.88",
+  "description": "A Gemini-first terminal coding CLI for Google Cloud Vertex AI, rebuilt and customized from the Claude Code sourcebase.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "gemma": "bin/gemma"
+  },
+  "scripts": {
+    "build": "bun ./scripts/build-cli.mjs",
+    "init:gemma": "python3 ./scripts/init-gemma.py",
+    "audit:publish": "python3 ./scripts/github-ready.py"
+  }
+}
