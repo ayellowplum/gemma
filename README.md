@@ -1,7 +1,5 @@
 # Gemma Source Build
 
-![](<img/2026-03-31 14-58-01-combined.gif>)
-
 A Gemini-first terminal coding CLI for Google Cloud Vertex AI, rebuilt and customized from the Claude Code sourcebase.
 
 ## Support
