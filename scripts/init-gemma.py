@@ -22,7 +22,17 @@ def run(cmd: list[str], cwd: Path) -> None:
 
 def ensure_executable(path: Path) -> None:
     current_mode = path.stat().st_mode
-    path.chmod(current_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+    desired_mode = current_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+    if current_mode == desired_mode:
+        return
+    try:
+        path.chmod(desired_mode)
+    except PermissionError:
+        # Some environments expose writable filesystems with chmod restrictions.
+        # If the file is already executable by the current user, continue.
+        if os.access(path, os.X_OK):
+            return
+        raise
 
 
 def require_tool(name: str) -> None:

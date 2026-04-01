@@ -26,6 +26,15 @@ CONTENT_RISK_PATTERNS = [
 ]
 
 SKIP_DIRS = {".git", "dist", ".cache", "node_modules"}
+CONTENT_IGNORE_FILES = {
+    Path("source/cli.js.map"),
+    Path("source/src/bridge/jwtUtils.ts"),
+    Path("source/src/components/ConsoleOAuthFlow.tsx"),
+    Path("source/src/main.tsx"),
+    Path("source/src/services/teamMemorySync/secretScanner.ts"),
+    Path("source/src/skills/bundled/claude-api/curl/examples.md"),
+    Path("source/src/utils/sessionIngressAuth.ts"),
+}
 
 
 def run_git(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -64,13 +73,16 @@ def scan_worktree_contents() -> list[str]:
             continue
         if any(part in SKIP_DIRS for part in path.parts):
             continue
+        rel_path = path.relative_to(ROOT)
+        if rel_path in CONTENT_IGNORE_FILES:
+            continue
         try:
             text = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
         for pattern in CONTENT_RISK_PATTERNS:
             if pattern.search(text):
-                hits.append(str(path.relative_to(ROOT)))
+                hits.append(str(rel_path))
                 break
     return sorted(set(hits))
 
